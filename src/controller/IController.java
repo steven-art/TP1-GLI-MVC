@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 
 import Model.IModele;
 
-public interface IController extends IModele {
+public interface IController {
 	/**
 	 * premet de savoir si la section et selectionne
 	 * @return

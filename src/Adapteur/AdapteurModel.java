@@ -11,112 +11,77 @@ import Model.Item;
 import Model.Modele;
 import view.MyCamembertView;
 
-public class AdapteurModel extends Modele{
-	
-	private Observable observable;
-	
-	public AdapteurModel() {
-		super();
-	}
-	@Override
-	public void init() {
-		super.init();
-		this.observable.notify();;
-	}
-	
-	public void addObserver(Observer observer)
-	{
-		this.observable.addObserver(observer);
-	}
-	
-	@Override
-	public void addItem(Item item) {
-		super.addItem(item);
-		this.observable.notify();
-	}
-	
-	@Override
-	public void deleteItem(int id) {
-		super.deleteItem(id);
-		this.observable.notify();
-	}
-	
-	@Override
-	public int size() {
-		return super.size();
-		
-		
-	}
-	@Override
-	public int getValues(int i) {
-		return super.getValues(i);
-	}
-	@Override
-	public void setItemValue(int index, int v) {
-		super.setItemValue(index, v);
-		this.observable.notify();
-	}
-	@Override
-	public int total() {
-		return super.total();
-		
-	}
-	
-	@Override
-	public String getTitle() {
-		return super.getTitle();
-		
-	}
-	
-	@Override
-	public String getUnit() {
-		return super.getUnit();
-		
-	}
-	
+public class AdapteurModel extends Observable{
 
-	@Override
+	private Modele model;
+
+	public AdapteurModel(String t) {
+		this.model = new Modele(t);
+	}
+
+	public void init() {
+		//creation des items
+		Item alimentation = new Item(2,"Alimentation","Assez cher",250);
+		Item cinema = new Item(3,"cinema","pas cher",11);
+		Item loyer = new Item(4,"loyer","Trés cher",600);
+
+		//remplissage de la collection
+		addItem(new Item(1,"Mobile","Assez cher",25));
+		addItem(alimentation);
+		addItem(cinema);
+		addItem(loyer); 
+		
+	}
+
+
+	public void addItem(Item item) {
+		model.addItem(item);
+		setChanged();
+		notifyObservers();
+	}
+
+
+	public void deleteItem(int id) {
+		model.deleteItem(id);
+		setChanged();
+		notifyObservers();
+	}
+
+
+	public int size() {
+		return model.size();
+
+	}
+
+	public double getValues(int i) {
+		return model.getValues(i);
+	}
+
+	public double total() {
+		return model.total();
+
+	}
+
+	public String getTitle() {
+		return model.getTitle();
+
+
+	}
+
+
+	public String getUnit() {
+		return model.getUnit();
+
+	}
+
 	public String getTitle(int i) {
-		return super.getTitle(i);
-		
+		return model.getTitle(i);
+
 	}
-	
-	@Override
+
 	public String getDescription(int i) {
-		return super.getDescription(i);
-		
+		return model.getDescription(i);
+
 	}
-	
-	@Override
-	public Item getItem(int idItem) {
-		return super.getItem(idItem);
-		
-	}
-//	@Override
-//	public List<Item> getItems(){
-//		return super.getItems();
-//		
-//	}
-//	
-//	@Override
-//	public void setName(String name) {
-//		super.setName(name);
-//		this.observable.notify();
-//	}
-//	
-//	@Override
-//	public String getName() {
-//		return super.getName();
-//		
-//	}
-//	
-	@Override
-	public void setUnit(String unit) {
-		super.setUnit(unit);
-		this.observable.notify();
-	}
-	@Override
-	public ArrayList<Item> getListItem() {
-		return super.getListItem();
-	}
+
 }

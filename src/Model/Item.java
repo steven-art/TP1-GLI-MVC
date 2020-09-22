@@ -5,11 +5,11 @@ public class Item {
 	private int idItem;
 	private String intitule;
 	private String description;
-	private int value;
+	private double value;
 	
 	// constructeur de la class
 	
-	public Item(int idItem, String intitule, String description, int value) {
+	public Item(int idItem, String intitule, String description, double value) {
 		this.idItem = idItem;
 		this.intitule = intitule;
 		this.description = description;
@@ -42,12 +42,12 @@ public class Item {
 	}
 
 	//getteur et setteur de la variable Value
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(int value) {
-		this.value = value;
+	public void setValue(double value) {
+		this.value = value; 
 	}
 	
 }

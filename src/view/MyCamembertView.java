@@ -45,13 +45,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import Adapteur.AdapteurModel;
+import Model.Item;
 import Model.Modele;
-import controller.controller;
+import controller.Controller;
 
 
 // this should actually implement an ICamembertView
 public class MyCamembertView extends JComponent implements MouseListener,
-		MouseMotionListener, Observer {
+MouseMotionListener, Observer {
 
 	static final Point2D pieCenter = new Point2D.Double(300, 300);
 	static final Dimension pieSize = new Dimension(300, 300);
@@ -75,10 +76,10 @@ public class MyCamembertView extends JComponent implements MouseListener,
 	Arc2D center;
 
 	// a link to the controller interface
-	///IController controller;
+	Controller controller;
 
 	// a link to the Model interface 
-	//ICamembertModel model;
+	AdapteurModel model;
 
 	double startingAngle;
 
@@ -94,17 +95,14 @@ public class MyCamembertView extends JComponent implements MouseListener,
 
 	Font fontCenter;
 	Font fontTags;
-	//variable crée pour le tp model et controller
-	
-	AdapteurModel adapteurModel;
-	controller controller;
-	public MyCamembertView(AdapteurModel m) {
-		adapteurModel = m;
-		startingAngle = 0.0;
-	
-        // reminder: we don't want the model to have an oberserver: use an adapter
-		adapteurModel.addObserver(this);
 
+	public MyCamembertView(AdapteurModel m) {
+		model = m;
+		startingAngle = 0.0;
+
+		// reminder: we don't want the model to have an oberserver: use an adapter
+		model.addObserver(this);
+		addMouseListener(this);
 		arcs = new ArrayList<Arc2D>();
 		selectedArcs = new ArrayList<Arc2D>();
 
@@ -146,28 +144,28 @@ public class MyCamembertView extends JComponent implements MouseListener,
 		// create non-selected arcs
 		arcs.clear();
 		double angle = startingAngle;
-		for (int i = 0; i < adapteurModel.size(); i++) {
+		for (int i = 0; i < model.size(); i++) {
 
 			Arc2D arc = new Arc2D.Double(pieCenter.getX() - pieSize.width / 2,
 					pieCenter.getY() - pieSize.height / 2, pieSize.width,
-					pieSize.height, angle, adapteurModel.getValues(i) / adapteurModel.total()
-							* 360 - pieRadialGap, Arc2D.PIE);
+					pieSize.height, angle, model.getValues(i) / model.total()
+					* 360 - pieRadialGap, Arc2D.PIE);
 			arcs.add(arc);
-			angle += adapteurModel.getValues(i) / adapteurModel.total() * 360;
+			angle += model.getValues(i) / model.total() * 360;
 		}
 
 		// create selected arcs
 		selectedArcs.clear();
 		angle = startingAngle;
-		for (int i = 0; i < adapteurModel.size(); i++) {
+		for (int i = 0; i < model.size(); i++) {
 
 			Arc2D arc = new Arc2D.Double(pieCenter.getX()
 					- selectedPieSize.width / 2, pieCenter.getY()
 					- selectedPieSize.height / 2, selectedPieSize.width,
-					selectedPieSize.height, angle, adapteurModel.getValues(i)
-							/ adapteurModel.total() * 360 - pieRadialGap, Arc2D.PIE);
+					selectedPieSize.height, angle, model.getValues(i)
+					/ model.total() * 360 - pieRadialGap, Arc2D.PIE);
 			selectedArcs.add(arc);
-			angle += adapteurModel.getValues(i) / adapteurModel.total() * 360;
+			angle += model.getValues(i) / model.total() * 360;
 		}
 
 		// create central arcs
@@ -186,7 +184,7 @@ public class MyCamembertView extends JComponent implements MouseListener,
 
 	}
 
-	public void setController(controller c) {
+	public void setController(Controller c) {
 		controller = c;
 	}
 
@@ -199,22 +197,22 @@ public class MyCamembertView extends JComponent implements MouseListener,
 	// select the next piece of pie
 	public void nextPie() {
 		controller.setSelectedPie((controller.getSelectedPie() + 1)
-				% adapteurModel.size());
+				% model.size());
 		System.out.println("Selected pie" + controller.getSelectedPie());
 		paint(getGraphics());
 
 	}
 
 	// select the previous piece of pie
-	 public void previousPie() {
-	        controller.setSelectedPie((controller.getSelectedPie() +controller.size())
-	                % adapteurModel.size());
-	        System.out.println("Selected pie" + controller.getSelectedPie());
+	public void previousPie() {
+		controller.setSelectedPie((controller.getSelectedPie() + model.size()-1)
+				% model.size());
+		System.out.println("Selected pie" + controller.getSelectedPie());
 
-	 
 
-	        paint(getGraphics());
-	    }
+
+		paint(getGraphics());
+	}
 
 	// select a piece of pie
 	public void selectPie(int i) {
@@ -273,13 +271,13 @@ public class MyCamembertView extends JComponent implements MouseListener,
 		}
 
 		double angle = startingAngle;
-		for (int i = 0; i < adapteurModel.size(); i++) {
+		for (int i = 0; i < model.size(); i++) {
 
 			if (controller.isSelected() && controller.getSelectedPie() == i) {
 				g2d.setColor(new Color(0, 100, (100 + 20 * i) % 255));
 				Arc2D arc = selectedArcs.get(i);
 				arc.setAngleStart(angle);
-				arc.setAngleExtent(adapteurModel.getValues(i) / adapteurModel.total() * 360
+				arc.setAngleExtent(model.getValues(i) / model.total() * 360
 						- pieRadialGap);
 				g2d.fill(arc);
 
@@ -288,11 +286,11 @@ public class MyCamembertView extends JComponent implements MouseListener,
 				g2d.setColor(new Color(100, 100, (100 + 20 * i) % 255));
 				Arc2D arc = arcs.get(i);
 				arc.setAngleStart(angle);
-				arc.setAngleExtent(adapteurModel.getValues(i) / adapteurModel.total() * 360
+				arc.setAngleExtent(model.getValues(i) / model.total() * 360
 						- pieRadialGap);
 				g2d.fill(arc);
 			}
-			angle += adapteurModel.getValues(i) / adapteurModel.total() * 360;
+			angle += model.getValues(i) / model.total() * 360;
 		}
 
 		g2d.setColor(Color.WHITE);
@@ -306,13 +304,13 @@ public class MyCamembertView extends JComponent implements MouseListener,
 
 		g2d.setFont(fontCenter);
 		g2d.setColor(Color.WHITE);
-		g2d.drawString(adapteurModel.getTitle(), (int) (pieCenter.getX() - adapteurModel
+		g2d.drawString(model.getTitle(), (int) (pieCenter.getX() - model
 				.getTitle().length() / 2 * fontCenter.getSize() * 0.7),
 				(int) pieCenter.getY() - fontCenter.getSize());
 
 		g2d.setFont(fontTags);
 		g2d.setColor(Color.WHITE);
-		String total = "" + adapteurModel.total() + " " + adapteurModel.getUnit();
+		String total = "" + model.total() + " " + model.getUnit();
 		g2d.drawString(total, (int) (pieCenter.getX() - total.length() / 2
 				* fontTags.getSize() * 0.7),
 				(int) pieCenter.getY() - fontTags.getSize() + 20);
@@ -320,9 +318,9 @@ public class MyCamembertView extends JComponent implements MouseListener,
 		if (!controller.isSelected()) {
 
 			angle = startingAngle;
-			for (int i = 0; i < adapteurModel.size(); i++) {
+			for (int i = 0; i < model.size(); i++) {
 
-				double midangle = angle + adapteurModel.getValues(i) / adapteurModel.total()
+				double midangle = angle + model.getValues(i) / model.total()
 						* 360.0 / 2.0;
 
 				double x = pieCenter.getX()
@@ -344,11 +342,11 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								GeneralPath.WIND_EVEN_ODD, 3);
 						stem.moveTo(
 								pieCenter.getX()
-										+ positionXOnCircle(pieSize.width / 2,
-												midangle),
+								+ positionXOnCircle(pieSize.width / 2,
+										midangle),
 								pieCenter.getY()
-										- positionYOnCircle(pieSize.width / 2,
-												midangle));
+								- positionYOnCircle(pieSize.width / 2,
+										midangle));
 						stem.lineTo(x + 1, y - tagSizeNotSelected.height);
 						stem.lineTo(x + 1, y + 3);
 						stem.closePath();
@@ -358,7 +356,7 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								tagSizeNotSelected.width, 3);
 						g2d.fill(tagUnderline);
 						g2d.setColor(Color.WHITE);
-						g2d.drawString(adapteurModel.getTitle(i), (int) x + 15, (int) y
+						g2d.drawString(model.getTitle(i), (int) x + 15, (int) y
 								- tagSizeNotSelected.height + 15);
 
 					} else { // top left
@@ -372,11 +370,11 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								GeneralPath.WIND_EVEN_ODD, 3);
 						stem.moveTo(
 								pieCenter.getX()
-										+ positionXOnCircle(pieSize.width / 2,
-												midangle),
+								+ positionXOnCircle(pieSize.width / 2,
+										midangle),
 								pieCenter.getY()
-										- positionYOnCircle(pieSize.width / 2,
-												midangle));
+								- positionYOnCircle(pieSize.width / 2,
+										midangle));
 						stem.lineTo(x - 1, y - tagSizeNotSelected.height);
 						stem.lineTo(x - 1, y + 3);
 						stem.closePath();
@@ -387,7 +385,7 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								tagSizeNotSelected.width, 3);
 						g2d.fill(tagUnderline);
 						g2d.setColor(Color.WHITE);
-						g2d.drawString(adapteurModel.getTitle(i), (int) x
+						g2d.drawString(model.getTitle(i), (int) x
 								- tagSizeNotSelected.width + 15, (int) y
 								- tagSizeNotSelected.height + 15);
 
@@ -402,11 +400,11 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								GeneralPath.WIND_EVEN_ODD, 3);
 						stem.moveTo(
 								pieCenter.getX()
-										+ positionXOnCircle(pieSize.width / 2,
-												midangle),
+								+ positionXOnCircle(pieSize.width / 2,
+										midangle),
 								pieCenter.getY()
-										- positionYOnCircle(pieSize.width / 2,
-												midangle));
+								- positionYOnCircle(pieSize.width / 2,
+										midangle));
 						stem.lineTo(x + 1, y);
 						stem.lineTo(x + 1, y + tagSizeNotSelected.height + 3);
 						stem.closePath();
@@ -417,7 +415,7 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								tagSizeNotSelected.width, 3);
 						g2d.fill(tagUnderline);
 						g2d.setColor(Color.WHITE);
-						g2d.drawString(adapteurModel.getTitle(i), (int) x + 15,
+						g2d.drawString(model.getTitle(i), (int) x + 15,
 								(int) y + 15);
 
 					} else { // bottom left
@@ -430,11 +428,11 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								GeneralPath.WIND_EVEN_ODD, 3);
 						stem.moveTo(
 								pieCenter.getX()
-										+ positionXOnCircle(pieSize.width / 2,
-												midangle),
+								+ positionXOnCircle(pieSize.width / 2,
+										midangle),
 								pieCenter.getY()
-										- positionYOnCircle(pieSize.width / 2,
-												midangle));
+								- positionYOnCircle(pieSize.width / 2,
+										midangle));
 						stem.lineTo(x - 1, y);
 						stem.lineTo(x - 1, y + tagSizeNotSelected.height + 3);
 						stem.closePath();
@@ -446,25 +444,25 @@ public class MyCamembertView extends JComponent implements MouseListener,
 								tagSizeNotSelected.width, 3);
 						g2d.fill(tagUnderline);
 						g2d.setColor(Color.WHITE);
-						g2d.drawString(adapteurModel.getTitle(i), (int) x
+						g2d.drawString(model.getTitle(i), (int) x
 								- tagSizeNotSelected.width + 15, (int) y + 15);
 
 					}
 				}
 
-				angle += adapteurModel.getValues(i) / adapteurModel.total() * 360;
+				angle += model.getValues(i) / model.total() * 360;
 
 			}
 		}
 
 		if (controller.isSelected()) {
 			angle = startingAngle;
-			for (int i = 0; i < adapteurModel.size(); i++) {
+			for (int i = 0; i < model.size(); i++) {
 
 				if (i == controller.getSelectedPie()) {
 
-					double midangle = angle + adapteurModel.getValues(i)
-							/ adapteurModel.total() * 360.0 / 2.0;
+					double midangle = angle + model.getValues(i)
+					/ model.total() * 360.0 / 2.0;
 
 					double x = pieCenter.getX()
 							+ positionXOnCircle(160, midangle);
@@ -483,12 +481,12 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									GeneralPath.WIND_EVEN_ODD, 3);
 							stem.moveTo(
 									pieCenter.getX()
-											+ positionXOnCircle(
-													pieSize.width / 2, midangle),
+									+ positionXOnCircle(
+											pieSize.width / 2, midangle),
 									pieCenter.getY()
-											- positionYOnCircle(
-													pieSize.height / 2,
-													midangle));
+									- positionYOnCircle(
+											pieSize.height / 2,
+											midangle));
 							stem.lineTo(x + 1, y - tagSizeSelected.height);
 							stem.lineTo(x + 1, y + 3);
 							stem.closePath();
@@ -498,16 +496,16 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									x, y, tagSizeSelected.width, 3);
 							g2d.fill(tagUnderline);
 							g2d.setColor(Color.WHITE);
-							g2d.drawString(adapteurModel.getTitle(i), (int) x + 15,
+							g2d.drawString(model.getTitle(i), (int) x + 15,
 									(int) y - tagSizeSelected.height + 15);
-							g2d.drawString("" + adapteurModel.getValues(i) + " "
-									+ adapteurModel.getUnit(), (int) x + 15, (int) y
+							g2d.drawString("" + model.getValues(i) + " "
+									+ model.getUnit(), (int) x + 15, (int) y
 									- tagSizeSelected.height + 30);
 							//
 							x += 15;
 							y = y - tagSizeSelected.height + 45;
 							AttributedCharacterIterator characterIterator = new AttributedString(
-									adapteurModel.getDescription(i)).getIterator();
+									model.getDescription(i)).getIterator();
 							FontRenderContext fontRenderContext = g2d
 									.getFontRenderContext();
 							LineBreakMeasurer measurer = new LineBreakMeasurer(
@@ -533,12 +531,12 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									GeneralPath.WIND_EVEN_ODD, 3);
 							stem.moveTo(
 									pieCenter.getX()
-											+ positionXOnCircle(
-													pieSize.width / 2, midangle),
+									+ positionXOnCircle(
+											pieSize.width / 2, midangle),
 									pieCenter.getY()
-											- positionYOnCircle(
-													pieSize.height / 2,
-													midangle));
+									- positionYOnCircle(
+											pieSize.height / 2,
+											midangle));
 							stem.lineTo(x - 1, y - tagSizeSelected.height);
 							stem.lineTo(x - 1, y + 3);
 							stem.closePath();
@@ -549,18 +547,18 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									tagSizeSelected.width, 3);
 							g2d.fill(tagUnderline);
 							g2d.setColor(Color.WHITE);
-							g2d.drawString(adapteurModel.getTitle(i), (int) x
+							g2d.drawString(model.getTitle(i), (int) x
 									- tagSizeSelected.width + 15, (int) y
 									- tagSizeSelected.height + 15);
-							g2d.drawString("" + adapteurModel.getValues(i) + " "
-									+ adapteurModel.getUnit(), (int) x
+							g2d.drawString("" + model.getValues(i) + " "
+									+ model.getUnit(), (int) x
 									- tagSizeSelected.width + 15, (int) y
 									- tagSizeSelected.height + 30);
 
 							x = x - tagSizeSelected.width + 15;
 							y = y - tagSizeSelected.height + 45;
 							AttributedCharacterIterator characterIterator = new AttributedString(
-									adapteurModel.getDescription(i)).getIterator();
+									model.getDescription(i)).getIterator();
 							FontRenderContext fontRenderContext = g2d
 									.getFontRenderContext();
 							LineBreakMeasurer measurer = new LineBreakMeasurer(
@@ -586,12 +584,12 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									GeneralPath.WIND_EVEN_ODD, 3);
 							stem.moveTo(
 									pieCenter.getX()
-											+ positionXOnCircle(
-													pieSize.width / 2, midangle),
+									+ positionXOnCircle(
+											pieSize.width / 2, midangle),
 									pieCenter.getY()
-											- positionYOnCircle(
-													pieSize.height / 2,
-													midangle));
+									- positionYOnCircle(
+											pieSize.height / 2,
+											midangle));
 							stem.lineTo(x + 1, y);
 							stem.lineTo(x + 1, y + tagSizeSelected.height + 3);
 							stem.closePath();
@@ -602,16 +600,16 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									tagSizeSelected.width, 3);
 							g2d.fill(tagUnderline);
 							g2d.setColor(Color.WHITE);
-							g2d.drawString(adapteurModel.getTitle(i), (int) x + 15,
+							g2d.drawString(model.getTitle(i), (int) x + 15,
 									(int) y + 15);
-							g2d.drawString("" + adapteurModel.getValues(i) + " "
-									+ adapteurModel.getUnit(), (int) x + 15,
+							g2d.drawString("" + model.getValues(i) + " "
+									+ model.getUnit(), (int) x + 15,
 									(int) y + 30);
 
 							x = x + 15;
 							y = y + 45;
 							AttributedCharacterIterator characterIterator = new AttributedString(
-									adapteurModel.getDescription(i)).getIterator();
+									model.getDescription(i)).getIterator();
 							FontRenderContext fontRenderContext = g2d
 									.getFontRenderContext();
 							LineBreakMeasurer measurer = new LineBreakMeasurer(
@@ -636,12 +634,12 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									GeneralPath.WIND_EVEN_ODD, 3);
 							stem.moveTo(
 									pieCenter.getX()
-											+ positionXOnCircle(
-													pieSize.width / 2, midangle),
+									+ positionXOnCircle(
+											pieSize.width / 2, midangle),
 									pieCenter.getY()
-											- positionYOnCircle(
-													pieSize.height / 2,
-													midangle));
+									- positionYOnCircle(
+											pieSize.height / 2,
+											midangle));
 							stem.lineTo(x - 1, y);
 							stem.lineTo(x - 1, y + tagSizeSelected.height + 3);
 							stem.closePath();
@@ -653,16 +651,16 @@ public class MyCamembertView extends JComponent implements MouseListener,
 									tagSizeSelected.width, 3);
 							g2d.fill(tagUnderline);
 							g2d.setColor(Color.WHITE);
-							g2d.drawString(adapteurModel.getTitle(i), (int) x
+							g2d.drawString(model.getTitle(i), (int) x
 									- tagSizeSelected.width + 15, (int) y + 15);
-							g2d.drawString("" + adapteurModel.getValues(i) + " "
-									+ adapteurModel.getUnit(), (int) x
+							g2d.drawString("" + model.getValues(i) + " "
+									+ model.getUnit(), (int) x
 									- tagSizeSelected.width + 15, (int) y + 30);
 
 							x = x - tagSizeSelected.width + 15;
 							y = y + 45;
 							AttributedCharacterIterator characterIterator = new AttributedString(
-									adapteurModel.getDescription(i)).getIterator();
+									model.getDescription(i)).getIterator();
 							FontRenderContext fontRenderContext = g2d
 									.getFontRenderContext();
 							LineBreakMeasurer measurer = new LineBreakMeasurer(
@@ -681,7 +679,7 @@ public class MyCamembertView extends JComponent implements MouseListener,
 					}
 				}
 
-				angle += adapteurModel.getValues(i) / adapteurModel.total() * 360;
+				angle += model.getValues(i) / model.total() * 360;
 			}
 		}
 
@@ -705,32 +703,33 @@ public class MyCamembertView extends JComponent implements MouseListener,
 		prevPosY = y;
 	}
 
-	
 
-    // if the user clicks on a pie, it gets selected, otherwise you deselect all.
-    
+
+	// if the user clicks on a pie, it gets selected, otherwise you deselect all.
+
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 
 		if (center.contains(arg0.getX(), arg0.getY())) {
-			controller.deSelect();
+			deSelect();
 		} else {
-
+			
+			drawPreviousNextButtons(g2d);
 			for (int i = 0; i < arcs.size(); i++) {
 				if (arcs.get(i).contains(arg0.getX(), arg0.getY())
 						&& !emptyCenter.contains(arg0.getX(), arg0.getY())) {
-					controller.selectPie(i);
+					selectPie(i);
 				}
 			}
 		}
 
 		if (previous.contains(arg0.getX(), arg0.getY())) {
-			controller.nextPie();
+			nextPie();
 		}
 
 		if (next.contains(arg0.getX(), arg0.getY())) {
-			controller.previousPie();
+			previousPie();
 		}
 
 	}
@@ -788,10 +787,6 @@ public class MyCamembertView extends JComponent implements MouseListener,
 		// TODO Auto-generated method stub
 
 	}
-
-	
-	
-	
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
@@ -802,36 +797,42 @@ public class MyCamembertView extends JComponent implements MouseListener,
 	}
 
 
-// this main method should actually be placed in another class (it's here just to avoid having multiple files)
-public static void main(String[] a) {
+	// this main method should actually be placed in another class (it's here just to avoid having multiple files)
+	public static void main(String[] a) {
 		JFrame window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setBounds(30, 30, 400, 400);
-		
+
 		// Create an instance of the model
-        // Model model;
-        AdapteurModel adaptateurModel = new AdapteurModel();
-        adaptateurModel.init();
-        // Maybe put some data in the model
+		// Model model;
+		AdapteurModel adapter = new AdapteurModel("Budget");
+		adapter.init();
+		adapter.addItem(new Item(7, "voiture", "essence", 250));
+		adapter.addItem(new Item(8, "piscine", "peut-être", 60));
+		adapter.addItem(new Item(9, "Basket-Ball", "Inscription et tenues", 500));
+		// Maybe put some data in the model
 		int oldFirst = 0;
 		int oldLast = 0;
 
-		// Create the controller and the view and link all together
-				
-		MyCamembertView view = new MyCamembertView(adaptateurModel);
-		controller control = new controller(adaptateurModel);
+
+		MyCamembertView view = new MyCamembertView(adapter);
+		Controller controller= new Controller(view, adapter);
 		
-		control.setView(view);
+		controller.setView(view);
+		view.setController(controller);
+
+		
+
 		// display layout
 		GridLayout layout = new GridLayout(1, 2);
 
-		window.getContentPane().add(control.getView());
-		
+		window.getContentPane().add(controller.getView());
+
 		window.setLayout(layout);
 		window.pack();
+		window.setSize(new Dimension(600,600));
 		window.setVisible(true);
-		window.pack();
 	}
-	
-	
+
+
 }

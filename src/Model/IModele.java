@@ -9,11 +9,11 @@ public interface IModele {
 
 	int size();
 	
-	int getValues(int i);
+	double getValues(int i);
 	
 	void setItemValue(int index, int v);
 	
-	int total();
+	double total();
 	
 
 	String getTitle();
@@ -32,11 +32,6 @@ public interface IModele {
 	
 	void addItem(Item item);
 	
-//	List<Item> getItems();
-	
-//	void setName(String name);
-	
-//	String getName();
 
 	void setUnit(String unit);
 

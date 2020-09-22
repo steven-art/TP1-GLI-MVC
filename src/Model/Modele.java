@@ -12,11 +12,12 @@ public class Modele implements IModele{
 		//variable 
 	ArrayList<Item> listItem;
 	
-	private String Title ="Budget";
+	private String Title;
 	private  EventListenerList listeners;
 	private String unit;
 	
-	public Modele() {
+	public Modele(String title) {
+		this.Title = title;
 		listItem = new ArrayList<Item>();
 		this.unit = "€";
 			
@@ -24,19 +25,8 @@ public class Modele implements IModele{
 	
 	public void init() {
 		
-	 	//creation des items
-	 	Item mobile = new Item(1,"Mobile","Assez cher",25);
-		Item alimentation = new Item(2,"Alimentation","Assez cher",250);
-		Item cinema = new Item(3,"cinema","pas cher",11);
-		Item loyer = new Item(4,"loyer","Trés cher",600);
+	 	
 		
-		//remplissage de la collection
-		listItem.add(mobile);
-		listItem.add(alimentation);
-		listItem.add(cinema);
-		listItem.add(loyer);
-		// creation de l'ecouter
-		listeners = new EventListenerList();
 	}
 	
 	//permet d'ajouté un item a la liste listItem
@@ -54,14 +44,14 @@ public class Modele implements IModele{
 		return listItem.size();
 	}
 
-	public int getValues(int i) {
+	public double getValues(int i) {
 		// TODO Auto-generated method stub
 		return listItem.get(i).getValue();
 	}
 
-	public int total() {
+	public double total() {
 		// TODO Auto-generated method stub
-		int res = 0;
+		double res = 0;
 		for(int i=0; i< listItem.size() ; i++) {
 			res = res + listItem.get(i).getValue() ;
 		}
