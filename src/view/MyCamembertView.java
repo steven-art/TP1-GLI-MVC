@@ -48,6 +48,8 @@ import Adapteur.AdapteurModel;
 import Model.Item;
 import Model.Modele;
 import controller.Controller;
+import partiejtable.JTableRenderer;
+import partiejtable.TableDesItem;
 
 
 // this should actually implement an ICamembertView
@@ -714,7 +716,7 @@ MouseMotionListener, Observer {
 		if (center.contains(arg0.getX(), arg0.getY())) {
 			deSelect();
 		} else {
-			
+
 			drawPreviousNextButtons(g2d);
 			for (int i = 0; i < arcs.size(); i++) {
 				if (arcs.get(i).contains(arg0.getX(), arg0.getY())
@@ -813,11 +815,13 @@ MouseMotionListener, Observer {
 		// Maybe put some data in the model
 		int oldFirst = 0;
 		int oldLast = 0;
-
-
+		//element de la JTABLE
+		JTableRenderer jtable = new JTableRenderer();
+		jtable.JTableExemple();
+		
 		MyCamembertView view = new MyCamembertView(adapter);
 		Controller controller= new Controller(view, adapter);
-		
+
 		controller.setView(view);
 		view.setController(controller);
 

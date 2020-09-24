@@ -30,7 +30,7 @@ public class AdapteurModel extends Observable{
 		addItem(alimentation);
 		addItem(cinema);
 		addItem(loyer); 
-		
+
 	}
 
 
@@ -67,8 +67,6 @@ public class AdapteurModel extends Observable{
 
 
 	}
-
-
 	public String getUnit() {
 		return model.getUnit();
 
