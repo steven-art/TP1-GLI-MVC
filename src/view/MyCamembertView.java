@@ -816,9 +816,8 @@ MouseMotionListener, Observer {
 		int oldFirst = 0;
 		int oldLast = 0;
 		//element de la JTABLE
-		JTableRenderer jtable = new JTableRenderer();
-		jtable.JTableExemple();
-		
+		TableDesItem jtable = new TableDesItem();		
+	
 		MyCamembertView view = new MyCamembertView(adapter);
 		Controller controller= new Controller(view, adapter);
 
@@ -831,7 +830,6 @@ MouseMotionListener, Observer {
 		GridLayout layout = new GridLayout(1, 2);
 
 		window.getContentPane().add(controller.getView());
-
 		window.setLayout(layout);
 		window.pack();
 		window.setSize(new Dimension(600,600));

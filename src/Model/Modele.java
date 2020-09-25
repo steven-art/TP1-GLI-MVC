@@ -25,8 +25,6 @@ public class Modele implements IModele{
 	
 	public void init() {
 		
-	 	
-		
 	}
 	
 	//permet d'ajouté un item a la liste listItem

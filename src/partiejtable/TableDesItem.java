@@ -1,90 +1,76 @@
 package partiejtable;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+// Packages to import 
+import javax.swing.JFrame; 
+import javax.swing.JScrollPane; 
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 
-import Model.Item;
-import Model.Modele;
+import Model.Item; 
 
-public class TableDesItem extends AbstractTableModel{
-	private Item item;
-	// En-tête de Jtable
-	private String[] columnNames={"idItem", "Name","Description","Fresh"};
-	private ArrayList colonneName = new ArrayList();
-	private ArrayList colonneLastName = new ArrayList();
-	Object [][] values = {{9, "Basket-Ball", "Inscription et tenues", 500},
-			{2,"Alimentation","Assez cher",250},
-
+public class TableDesItem { 
+	// frame 
+	private JFrame f; 
+	// Table 
+	private JTable j; 
+	// Data to be displayed in the JTable 
+	private Object[][] data = {{2,"Alimentation","Assez cher",250},
+			{3,"shopping","trés peu",5.0}
 	};
 
-	@Override
+
+	// Column Names 
+	String[] columnNames = { "id de l'Item", "Name", "Description","Valeur" }; 
+
+	// Constructor 
+	public TableDesItem() 
+	{ 
+		// Frame initiallization 
+		f = new JFrame(); 
+
+		// Frame Title 
+		f.setTitle("Table d'ajout des élements du budget"); 
+
+
+		// Initializing the JTable 
+		j = new JTable(data, columnNames); 
+		j.setBounds(30, 40, 200, 300); 
+
+		// adding it to JScrollPane 
+		JScrollPane sp = new JScrollPane(j); 
+		f.add(sp); 
+		// Frame Size 
+		f.setSize(500, 200); 
+		// Frame Visible = true 
+		f.setVisible(true); 
+	} 
+
+	// Driver  method 
+//	public static void main(String[] args) 
+//	{  
+//		new TableDesItem(); 
+//	} 
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		return columnNames.length;
 	}
-
-	@Override
-	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return values.length;
-	}
-
-	public String getColumnNames(int col) {
-		return columnNames[col];
-	}
-
-	public Class getColumnClass(int c) {
-		return getValueAt(0,c).getClass();
-	}
-	public boolean isCellEditable(int row, int col) {
-		return (col < 2);
-	}
-	public void setValueAt(Object value, int row, int col) {
-		values[row][col] = value;
-		fireTableCellUpdated(row,col);
-	}
-	@Override
-	public Object getValueAt(int row, int col) {
-		// TODO Auto-generated method stub
-		return values[row][col];
-	}
-
-	public void addNewRow(int ligne) {
-		int addline = getRowCount();
-		if (ligne != -1)addline = ligne +1;
-		colonneName.add(addline, "Name");
-		colonneLastName.add(addline, "First Name");
-		this.fireTableStructureChanged();
-	}
-	public void removeNewRow(int ligne) {
-		if (getRowCount() == 0 || ligne < 0)
-			return;colonneName.remove(ligne);
-			colonneLastName.remove(ligne);
-			this.fireTableStructureChanged();
-	}
-
-	public TableDesItem getModel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public int getSelectedRow() {
-		// TODO Auto-generated method stub
-		return getRowCount();
-	}
-}
+	//    public int getRowCount() {
+	//    	return data.length;
+	//    	}
+	//    
+	//    public void addRow(Item item) {
+	//        data.add(item);
+	//        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+	//    }
+	//
+	//    public void deleteRow() {
+	//           for(int rowIndex = data.length - 1; rowIndex >= 0; rowIndex--) {
+	//            if(data.get(rowIndex).isSelect()) {
+	//          data.remove(rowIndex);
+	//         }}}
 
 
 
-
-
+} 
